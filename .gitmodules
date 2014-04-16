@@ -1,0 +1,3 @@
+[submodule "modules/luvit-options"]
+	path = modules/luvit-options
+	url = https://github.com/radare/luvit-options.git
