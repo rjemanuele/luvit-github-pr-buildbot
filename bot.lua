@@ -44,8 +44,8 @@ local function webhook_handler(request, response)
     response:write("Hello")
     response:finish()
     local t = ''
-    p("request", request)
-    p("postBuffer", postBuffer)
+    --p("request", request)
+    --p("postBuffer", postBuffer)
     local ret, error = pcall(function()
       t = JSON.parse(postBuffer)
       --p("final", t)
@@ -53,22 +53,24 @@ local function webhook_handler(request, response)
       local found = string.find(t.comment.body, "[Pp][Rr][Bb][Uu][Ii][Ll][Dd]")
       if found ~= nil then
         --Post to buildbot
-        p(t)
+        --p(t)
         get_pr_data(t.issue.pull_request.url, function(err, data)
-          p(err, data)
+          --p(err, data)
           if err == nil then
             local ret
             ret, err = pcall(function()
               local pr_data = JSON.parse(data)
-              p(pr_data)
-              spawn("buildbot",
-                {'sendchange',
-                 '-W', t.sender.login,
-                 '-m', config.buildbot.master,
-                 '-C', config.buildbot.category,
-                 '-b', pr_data.head.ref,
-                 '-R', t.repository.html_url,
-                 'Dummy Force'})
+              --p(pr_data)
+              local options = {
+                'sendchange',
+                '-W', t.sender.login,
+                '-m', config.buildbot.master,
+                '-C', config.buildbot.category,
+                '-b', pr_data.head.ref,
+                '-R', t.repository.html_url,
+                'placeholder'}
+              p('buildbot', options)
+              spawn("buildbot", options)
             end)
           end
 
@@ -115,7 +117,7 @@ function get_pr_data(pr_url, callback)
 
   local data = ''
 
-  p("Making request", options)
+  --p("Making request", options)
 
   local req = https.request(options, function(res)
     res:on('data', function (chunk)
